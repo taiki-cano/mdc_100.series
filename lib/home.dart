@@ -13,11 +13,15 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import 'model/product.dart';
+import 'model/products_repository.dart';
+import 'supplemental/asymmetric_view.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  // TODO: Make a collection of cards (102)
   // TODO: Add a variable for Category (104)
   @override
   Widget build(BuildContext context) {
@@ -25,65 +29,111 @@ class HomePage extends StatelessWidget {
     // TODO: Pass Category variable to AsymmetricView (104)
     return Scaffold(
       // Add app bar (102)
-      appBar: AppBar(
-        title: const Text('SHRINE'),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            semanticLabel: 'menu',
-          ),
-          onPressed: () {
-            print('Menu button');
-          },
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              print('Search button');
-            },
-            icon: const Icon(Icons.search, semanticLabel: 'search'),
-          ),
-          IconButton(
-            onPressed: () {
-              print('Filter button');
-            },
-            icon: const Icon(Icons.tune, semanticLabel: 'filter'),
-          ),
-        ],
+      // appBar: AppBar(
+      //   title: const Text('SHRINE'),
+      //   leading: IconButton(
+      //     icon: const Icon(
+      //       Icons.menu,
+      //       semanticLabel: 'menu',
+      //     ),
+      //     onPressed: () {
+      //       print('Menu button');
+      //     },
+      //   ),
+      //   actions: <Widget>[
+      //     IconButton(
+      //       onPressed: () {
+      //         print('Search button');
+      //       },
+      //       icon: const Icon(Icons.search, semanticLabel: 'search'),
+      //     ),
+      //     IconButton(
+      //       onPressed: () {
+      //         print('Filter button');
+      //       },
+      //       icon: const Icon(Icons.tune, semanticLabel: 'filter'),
+      //     ),
+      //   ],
+      // ),
+      // Add a grid view (102)
+      body: AsymmetricView(
+        products: ProductsRepository.loadProducts(Category.all),
       ),
-      // TODO: Add a grid view (102)
-      body: GridView.count(
-        crossAxisCount: 2,
-        padding: const EdgeInsets.all(16.0),
-        childAspectRatio: 8.0 / 9.0,
-        children: [
-          Card(
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AspectRatio(
-                  aspectRatio: 18.0 / 11.0,
-                  child: Image.asset('assets/diamond.png'),
+    );
+  }
+}
+
+class BuildGridCards extends StatefulWidget {
+  const BuildGridCards({Key? key}) : super(key: key);
+
+  @override
+  State<BuildGridCards> createState() => _BuildGridCardsState();
+}
+
+class _BuildGridCardsState extends State<BuildGridCards> {
+  List<Product> products = ProductsRepository.loadProducts(Category.all);
+  @override
+  void initState() {
+    super.initState();
+    if (products.isEmpty) const <Card>[];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 2,
+      padding: const EdgeInsets.all(16.0),
+      childAspectRatio: 8.0 / 9.0,
+      children: _buildGridCards(context),
+    );
+  }
+
+  // Make a collection of cards (102)
+  List<Card> _buildGridCards(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final NumberFormat formatter =
+        NumberFormat.simpleCurrency(locale: Localizations.localeOf(context).toString());
+
+    return products.map((product) {
+      return Card(
+          clipBehavior: Clip.antiAlias,
+          elevation: 0.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              AspectRatio(
+                aspectRatio: 18.0 / 11.0,
+                child: Image.asset(
+                  product.assetName,
+                  package: product.assetPackage,
+                  fit: BoxFit.fitWidth,
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text('Title'),
-                      SizedBox(height: 8.0),
-                      Text('Secondary Text'),
+                      Text(
+                        product.name,
+                        style: theme.textTheme.titleLarge,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        formatter.format(product.price),
+                        style: theme.textTheme.titleSmall,
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      // Set resizeToAvoidBottomInset (101)
-      resizeToAvoidBottomInset: false,
-    );
+              ),
+            ],
+          ));
+    }).toList();
   }
 }

@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -43,7 +44,10 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Image.asset('assets/diamond.png'),
                 const SizedBox(height: 16.0),
-                const Text('SHRINE'),
+                Text(
+                  'SHRINE',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
               ],
             ),
             const SizedBox(height: 120.0),
@@ -51,26 +55,47 @@ class _LoginPageState extends State<LoginPage> {
             // Add TextField widgets (101)
             TextField(
               controller: _usernameController,
-              decoration: const InputDecoration(filled: true, labelText: 'User name'),
+              decoration: const InputDecoration(
+                // filled: true,
+                labelText: 'User name',
+              ),
             ),
             // spacer
             const SizedBox(height: 12.0),
             // [Passeord]
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(filled: true, labelText: 'Password'),
+              decoration: const InputDecoration(
+                // filled: true,
+                labelText: 'Password',
+              ),
               obscureText: true,
             ),
             // Add button bar (101)
             OverflowBar(
               alignment: MainAxisAlignment.end,
               children: [
-                TextButton(onPressed: () => _clearText(), child: const Text('CANCEL')),
+                TextButton(
+                  onPressed: () => _clearText(),
+                  child: const Text('CANCEL'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.secondary,
+                    shape: const BeveledRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(7.0)),
+                    ),
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   child: const Text('NEXT'),
+                  style: ElevatedButton.styleFrom(
+                    elevation: 8.0,
+                    shape: const BeveledRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(7.0)),
+                    ),
+                  ),
                 ),
               ],
             ),
